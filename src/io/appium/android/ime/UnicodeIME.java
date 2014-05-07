@@ -1,6 +1,11 @@
 package io.appium.android.ime;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharacterCodingException;
 
 import android.inputmethodservice.InputMethodService;
 import android.text.method.MetaKeyKeyListener;
@@ -13,6 +18,8 @@ public class UnicodeIME extends InputMethodService {
     // encodings
     private static final Charset M_UTF7 = Charset.forName("x-IMAP-mailbox-name");
     private static final Charset ASCII  = Charset.forName("US-ASCII");
+
+    private static final CharsetDecoder decoder = M_UTF7.newDecoder();
 
     // markers of UTF-7 content
     private static final char M_UTF7_SHIFT   = '&';
@@ -95,8 +102,12 @@ public class UnicodeIME extends InputMethodService {
         isShifted = false;
         unicodeString.append(M_UTF7_UNSHIFT);
         String decoded = decodeUtf7(unicodeString.toString());
-        InputConnection ic = getCurrentInputConnection();
-        ic.commitText(decoded, 1);
+        if (unicodeString.toString().equals("&-")) {
+            // this handles the case where the shift and unshift chars are
+            // inputed by the user with nothing intervening
+            decoded = unicodeString.toString();
+        }
+        getCurrentInputConnection().commitText(decoded, 1);
         unicodeString = null;
     }
 
@@ -113,14 +124,19 @@ public class UnicodeIME extends InputMethodService {
 
     private void appendChar(int c) {
         unicodeString.append((char) c);
-
-        // this will make the intermediate characters print in the text field
-        // getCurrentInputConnection().setComposingText(composing, 1);
+        getCurrentInputConnection().setComposingText(unicodeString, 1);
     }
 
     private String decodeUtf7(String encStr) {
-        byte[] encoded = encStr.getBytes(ASCII);
-        return new String(encoded, M_UTF7);
+        ByteBuffer encoded = ByteBuffer.wrap(encStr.getBytes(ASCII));
+        String decoded;
+        try {
+            CharBuffer buf = decoder.decode(encoded);
+            decoded = buf.toString();
+        } catch (CharacterCodingException e) {
+            decoded = encStr;
+        }
+        return decoded;
     }
 
     private boolean isAsciiPrintable(int c) {

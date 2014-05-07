@@ -1,5 +1,4 @@
-io.appium.android.ime
-=====================
+# io.appium.android.ime
 
 The Android emulator does not play well with non-ASCII characters. Text sent to the emulator through Selenium will be filtered through the default keyboard, which means that things get stripped down to ASCII. "परीक्षणम्" ("Testing" in Sanskrit) becomes "prksnm".
 
@@ -13,13 +12,20 @@ adb uninstall io.appium.android.ime
 adb install bin/UnicodeIME-debug.apk
 ```
 
-This builds the application, removes any old version of it, and then installs the recently built one.
+This builds the application, removes any old version of it (if installed), and then installs the recently built one.
 
-Once the input method is installed on the emulator, go to the emulator and access `Settings`, then `Language & Input`. Make sure `Appium Android Input Manager for Unicode` is selected, and finally go to `Default` and set it to `Appium Android Input Manager for Unicode`.
+Once the input method is installed on the emulator, execute the following:
 
-Your emulator is now set to receive encoded text from [Appium](http://appium.io/)!
+```shell
+abd shell ime enable io.appium.android.ime/.UnicodeIME
+adb shell ime set io.appium.android.ime/.UnicodeIME
+```
 
-On the Appium Bootstrap side, there needs to be an encoding of the text into Modified UTF-7:
+(Alternatively, on the device, access `Settings`, then `Language & Input`. Make sure `Appium Android Input Manager for Unicode` is selected, and finally go to `Default` and set it to `Appium Android Input Manager for Unicode`.)
+
+Your device is now set to receive encoded text from [Appium](http://appium.io/)!
+
+On the Appium Bootstrap side, there needs to be an encoding of the text into Modified UTF-7, sending encoded text to the device through `setText`:
 
 ```java
 import java.nio.charset.Charset;
@@ -36,3 +42,13 @@ public class UnicodeEncoder {
     }
 }
 ```
+
+## Caveats
+
+The encoding system uses the characters `&` and `-` to demarcate encoded text, which means that there is the potential for those characters within otherwise normal text to be handled wierdly. Make sure to test these segments with care.
+
+The encoded text will be displayed on the device before being decoded. This might look strange, but without it there is no way to handle the `&` and `-` characters reliably. Testing will work even with the intermediate display.
+
+If you set the text into the same edit field multiple times without resetting, the IME is recycled. This means that if a `&` is inserted, and at a later point a `-` is inserted, the text between will be placed before the text of the last call. Keep, therefore, your tests atomic.
+
+The Android emulator cannot handle certain scripts, though the text is there and can be retrieved with no problems. The problem is only display (generally, it comes out looking like whitespace).
