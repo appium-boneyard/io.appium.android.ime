@@ -47,8 +47,6 @@ public class UnicodeEncoder {
 
 The encoding system uses the characters `&` and `-` to demarcate encoded text, which means that there is the potential for those characters within otherwise normal text to be handled wierdly. This can be obviated by encoding any text with `&` in it.
 
-The encoded text will be displayed on the device before being decoded. This might look strange, but without it there is no way to handle the `&` and `-` characters reliably. Testing will work even with the intermediate display.
-
 If you set the text into the same edit field multiple times without resetting, the IME is recycled. This means that if a `&` is inserted, and at a later point a `-` is inserted, the text between will be placed before the text of the last call. Keep, therefore, your tests atomic.
 
 The Android emulator cannot handle certain scripts, though the text is there and can be retrieved with no problems. The problem is only display (generally, it comes out looking like whitespace).
