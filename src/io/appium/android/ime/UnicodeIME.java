@@ -119,7 +119,6 @@ public class UnicodeIME extends InputMethodService {
 
     private void appendChar(int c) {
         unicodeString.append((char) c);
-        getCurrentInputConnection().setComposingText(unicodeString, 1);
     }
 
     private String decodeUtf7(String encStr) {
