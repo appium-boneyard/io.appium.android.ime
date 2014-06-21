@@ -102,11 +102,6 @@ public class UnicodeIME extends InputMethodService {
         isShifted = false;
         unicodeString.append(M_UTF7_UNSHIFT);
         String decoded = decodeUtf7(unicodeString.toString());
-        if (unicodeString.toString().equals("&-")) {
-            // this handles the case where the shift and unshift chars are
-            // inputed by the user with nothing intervening
-            decoded = unicodeString.toString();
-        }
         getCurrentInputConnection().commitText(decoded, 1);
         unicodeString = null;
     }

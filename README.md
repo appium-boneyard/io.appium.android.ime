@@ -45,7 +45,7 @@ public class UnicodeEncoder {
 
 ## Caveats
 
-The encoding system uses the characters `&` and `-` to demarcate encoded text, which means that there is the potential for those characters within otherwise normal text to be handled wierdly. Make sure to test these segments with care.
+The encoding system uses the characters `&` and `-` to demarcate encoded text, which means that there is the potential for those characters within otherwise normal text to be handled wierdly. This can be obviated by encoding any text with `&` in it.
 
 The encoded text will be displayed on the device before being decoded. This might look strange, but without it there is no way to handle the `&` and `-` characters reliably. Testing will work even with the intermediate display.
 
