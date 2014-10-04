@@ -1,0 +1,26 @@
+{
+  "name": "appium-android-ime",
+  "version": "1.0.0",
+  "description": "Android Input Manager for testing Unicode",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/appium/io.appium.android.ime.git"
+  },
+  "keywords": [
+    "appium",
+    "test",
+    "app",
+    "ime",
+    "android"
+  ],
+  "author": "https://github.com/imurchie",
+  "license": "apache-2.0",
+  "bugs": {
+    "url": "https://github.com/appium/io.appium.android.ime/issues"
+  },
+  "homepage": "https://github.com/appium/io.appium.android.ime"
+}

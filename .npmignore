@@ -1,0 +1,7 @@
+bin/*
+!bin/UnicodeIME-debug.apk
+gen
+out
+.settings/
+*.apk
+.idea/*
