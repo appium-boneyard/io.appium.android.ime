@@ -2,7 +2,7 @@
   "name": "appium-android-ime",
   "version": "1.0.0",
   "description": "Android Input Manager for testing Unicode",
-  "main": "index.js",
+  "main": "bin/UnicodeIME-debug.apk",
   "scripts": {
     "prepublish": "android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug"
   },
