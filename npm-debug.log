@@ -1,0 +1,109 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/Users/jonahss/.nvm/v0.10.32/bin/npm', 'publish' ]
+2 info using npm@2.0.0
+3 info using node@v0.10.32
+4 verbose publish [ '.' ]
+5 verbose cache add [ '.', null ]
+6 verbose cache add spec="." args=[".",null]
+7 verbose parsed spec { raw: '.',
+7 verbose parsed spec   scope: null,
+7 verbose parsed spec   name: null,
+7 verbose parsed spec   rawSpec: '.',
+7 verbose parsed spec   spec: '/Users/jonahss/Workspace/io.appium.android.ime',
+7 verbose parsed spec   type: 'local' }
+8 verbose cache add local package /Users/jonahss/Workspace/io.appium.android.ime
+9 silly lockFile 3a52ce78- .
+10 verbose lock . /Users/jonahss/.npm/3a52ce78-.lock
+11 verbose tar pack [ '/Users/jonahss/.npm/appium-android-ime/1.0.0/package.tgz',
+11 verbose tar pack   '.' ]
+12 verbose tarball /Users/jonahss/.npm/appium-android-ime/1.0.0/package.tgz
+13 verbose folder .
+14 info prepublish appium-android-ime@1.0.0
+15 verbose unsafe-perm in lifecycle true
+16 silly lockFile 1f1177db-tar tar://.
+17 verbose lock tar://. /Users/jonahss/.npm/1f1177db-tar.lock
+18 silly lockFile 91916dee-um-android-ime-1-0-0-package-tgz tar:///Users/jonahss/.npm/appium-android-ime/1.0.0/package.tgz
+19 verbose lock tar:///Users/jonahss/.npm/appium-android-ime/1.0.0/package.tgz /Users/jonahss/.npm/91916dee-um-android-ime-1-0-0-package-tgz.lock
+20 silly lockFile 1f1177db-tar tar://.
+21 silly lockFile 1f1177db-tar tar://.
+22 silly lockFile 91916dee-um-android-ime-1-0-0-package-tgz tar:///Users/jonahss/.npm/appium-android-ime/1.0.0/package.tgz
+23 silly lockFile 91916dee-um-android-ime-1-0-0-package-tgz tar:///Users/jonahss/.npm/appium-android-ime/1.0.0/package.tgz
+24 silly lockFile a75ed19c-appium-android-ime-1-0-0-package /Users/jonahss/.npm/appium-android-ime/1.0.0/package
+25 verbose lock /Users/jonahss/.npm/appium-android-ime/1.0.0/package /Users/jonahss/.npm/a75ed19c-appium-android-ime-1-0-0-package.lock
+26 silly lockFile a75ed19c-appium-android-ime-1-0-0-package /Users/jonahss/.npm/appium-android-ime/1.0.0/package
+27 silly lockFile a75ed19c-appium-android-ime-1-0-0-package /Users/jonahss/.npm/appium-android-ime/1.0.0/package
+28 silly lockFile 3a52ce78- .
+29 silly lockFile 3a52ce78- .
+30 silly publish { name: 'appium-android-ime',
+30 silly publish   version: '1.0.0',
+30 silly publish   description: 'Android Input Manager for testing Unicode',
+30 silly publish   main: 'bin/UnicodeIME-debug.apk',
+30 silly publish   scripts: { prepublish: 'android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug' },
+30 silly publish   repository:
+30 silly publish    { type: 'git',
+30 silly publish      url: 'https://github.com/appium/io.appium.android.ime.git' },
+30 silly publish   keywords: [ 'appium', 'test', 'app', 'ime', 'android' ],
+30 silly publish   author: { name: 'https://github.com/imurchie' },
+30 silly publish   license: 'apache-2.0',
+30 silly publish   bugs: { url: 'https://github.com/appium/io.appium.android.ime/issues' },
+30 silly publish   homepage: 'https://github.com/appium/io.appium.android.ime',
+30 silly publish   readme: '# io.appium.android.ime\n\nThe Android emulator does not play well with non-ASCII characters. Text sent to the emulator through Selenium will be filtered through the default keyboard, which means that things get stripped down to ASCII. "परीक्षणम्" ("Testing" in Sanskrit) becomes "prksnm".\n\nTo get around this, this [input method](http://developer.android.com/guide/topics/text/creating-input-method.html), when set as the default, catches Unicode text encoded as [Modified UTF-7](http://tools.ietf.org/html/rfc3501) and recodes it as Unicode. Text input fields can then receive and send any characters that Unicode can encode.\n\nTo install, with the emulator running execute the following:\n\n```shell\nant debug\nadb uninstall io.appium.android.ime\nadb install bin/UnicodeIME-debug.apk\n```\n\nThis builds the application, removes any old version of it (if installed), and then installs the recently built one.\n\nOnce the input method is installed on the emulator, execute the following:\n\n```shell\nabd shell ime enable io.appium.android.ime/.UnicodeIME\nadb shell ime set io.appium.android.ime/.UnicodeIME\n```\n\n(Alternatively, on the device, access `Settings`, then `Language & Input`. Make sure `Appium Android Input Manager for Unicode` is selected, and finally go to `Default` and set it to `Appium Android Input Manager for Unicode`.)\n\nYour device is now set to receive encoded text from [Appium](http://appium.io/)!\n\nOn the Appium Bootstrap side, there needs to be an encoding of the text into Modified UTF-7, sending encoded text to the device through `setText`:\n\n```java\nimport java.nio.charset.Charset;\n\n\npublic class UnicodeEncoder {\n    private static final Charset M_UTF7 = Charset.forName("x-IMAP-mailbox-name");\n    private static final Charset ASCII  = Charset.forName("US-ASCII");\n\n\n    public static String encode(String text) {\n        byte[] encoded = text.getBytes(M_UTF7);\n        return new String(encoded, ASCII);\n    }\n}\n```\n\n## Caveats\n\nThe encoding system uses the characters `&` and `-` to demarcate encoded text, which means that there is the potential for those characters within otherwise normal text to be handled wierdly. This can be obviated by encoding any text with `&` in it.\n\nIf you set the text into the same edit field multiple times without resetting, the IME is recycled. This means that if a `&` is inserted, and at a later point a `-` is inserted, the text between will be placed before the text of the last call. Keep, therefore, your tests atomic.\n\nThe Android emulator cannot handle certain scripts, though the text is there and can be retrieved with no problems. The problem is only display (generally, it comes out looking like whitespace).\n',
+30 silly publish   readmeFilename: 'README.md',
+30 silly publish   gitHead: '08e3b67864fceb4c5d7dd456d54453802ffeb8a6',
+30 silly publish   _id: 'appium-android-ime@1.0.0',
+30 silly publish   _shasum: 'ec44546f027f475dcbda6a520385f34ae7c6cb0a',
+30 silly publish   _from: '.' }
+31 verbose mapToRegistry name appium-android-ime
+32 verbose mapToRegistry uri https://registry.npmjs.org/appium-android-ime
+33 verbose publish registryBase https://registry.npmjs.org/
+34 verbose request on initialization, where is /appium-android-ime
+35 verbose request after pass 1, where is /appium-android-ime
+36 verbose request url raw /appium-android-ime
+37 verbose request resolving registry [ 'https://registry.npmjs.org/', './appium-android-ime' ]
+38 verbose request after pass 2, where is https://registry.npmjs.org/appium-android-ime
+39 verbose request sending authorization for write operation
+40 info attempt registry request try #1 at 18:01:34
+41 verbose request id 5a9fd5226c88bae8
+42 http request PUT https://registry.npmjs.org/appium-android-ime
+43 http 403 https://registry.npmjs.org/appium-android-ime
+44 verbose headers { date: 'Sat, 04 Oct 2014 01:01:32 GMT',
+44 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+44 verbose headers   'content-type': 'application/json',
+44 verbose headers   'cache-control': 'max-age=60',
+44 verbose headers   'content-length': '5496',
+44 verbose headers   'accept-ranges': 'bytes',
+44 verbose headers   via: '1.1 varnish',
+44 verbose headers   'x-served-by': 'cache-lax1431-LAX',
+44 verbose headers   'x-cache': 'MISS',
+44 verbose headers   'x-cache-hits': '0',
+44 verbose headers   'x-timer': 'S1412384492.254941,VS0,VE136',
+44 verbose headers   'keep-alive': 'timeout=10, max=50',
+44 verbose headers   connection: 'Keep-Alive' }
+45 error publish Failed PUT 403
+46 verbose stack Error: forbidden cannot modify pre-existing version: 1.0.0
+46 verbose stack old={"name":"appium-android-ime","version":"1.0.0","description":"Android Input Manager for testing Unicode","main":"index.js","scripts":{"prepublish":"android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug"},"repository":{"type":"git","url":"https://github.com/appium/io.appium.android.ime.git"},"keywords":["appium","test","app","ime","android"],"author":{"name":"https://github.com/imurchie"},"license":"apache-2.0","bugs":{"url":"https://github.com/appium/io.appium.android.ime/issues"},"homepage":"https://github.com/appium/io.appium.android.ime","gitHead":"4a722d3232d4ae772a173a9a9417f5ee87fd33c0","_id":"appium-android-ime@1.0.0","_shasum":"7ea8761574893ba9409f5dc475bfc8ef390796f0","_from":".","_npmVersion":"2.0.0","_npmUser":{"name":"jonahss","email":"jonahss@gmail.com"},"maintainers":[{"name":"jonahss","email":"jonahss@gmail.com"}],"dist":{"shasum":"7ea8761574893ba9409f5dc475bfc8ef390796f0","tarball":"http://registry.npmjs.org/appium-android-ime/-/appium-android-ime-1.0.0.tgz"}}
+46 verbose stack new={"name":"appium-android-ime","version":"1.0.0","description":"Android Input Manager for testing Unicode","main":"bin/UnicodeIME-debug.apk","scripts":{"prepublish":"android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug"},"repository":{"type":"git","url":"https://github.com/appium/io.appium.android.ime.git"},"keywords":["appium","test","app","ime","android"],"author":{"name":"https://github.com/imurchie"},"license":"apache-2.0","bugs":{"url":"https://github.com/appium/io.appium.android.ime/issues"},"homepage":"https://github.com/appium/io.appium.android.ime","readme":"# io.appium.android.ime\u000a\u000aThe Android emulator does not play well with non-ASCII characters. Text sent to the emulator through Selenium will be filtered through the default keyboard, which means that things get stripped down to ASCII. \"परीक्षणम्\" (\"Testing\" in Sanskrit) becomes \"prksnm\".\u000a\u000aTo get around this, this [input method](http://developer.android.com/guide/topics/text/creating-input-method.html), when set as the default, catches Unicode text encoded as [Modified UTF-7](http://tools.ietf.org/html/rfc3501) and recodes it as Unicode. Text input fields can then receive and send any characters that Unicode can encode.\u000a\u000aTo install, with the emulator running execute the following:\u000a\u000a```shell\u000aant debug\u000aadb uninstall io.appium.android.ime\u000aadb install bin/UnicodeIME-debug.apk\u000a```\u000a\u000aThis builds the application, removes any old version of it (if installed), and then installs the recently built one.\u000a\u000aOnce the input method is installed on the emulator, execute the following:\u000a\u000a```shell\u000aabd shell ime enable io.appium.android.ime/.UnicodeIME\u000aadb shell ime set io.appium.android.ime/.UnicodeIME\u000a```\u000a\u000a(Alternatively, on the device, access `Settings`, then `Language & Input`. Make sure `Appium Android Input Manager for Unicode` is selected, and finally go to `Default` and set it to `Appium Android Input Manager for Unicode`.)\u000a\u000aYour device is now set to receive encoded text from [Appium](http://appium.io/)!\u000a\u000aOn the Appium Bootstrap side, there needs to be an encoding of the text into Modified UTF-7, sending encoded text to the device through `setText`:\u000a\u000a```java\u000aimport java.nio.charset.Charset;\u000a\u000a\u000apublic class UnicodeEncoder {\u000a    private static final Charset M_UTF7 = Charset.forName(\"x-IMAP-mailbox-name\");\u000a    private static final Charset ASCII  = Charset.forName(\"US-ASCII\");\u000a\u000a\u000a    public static String encode(String text) {\u000a        byte[] encoded = text.getBytes(M_UTF7);\u000a        return new String(encoded, ASCII);\u000a    }\u000a}\u000a```\u000a\u000a## Caveats\u000a\u000aThe encoding system uses the characters `&` and `-` to demarcate encoded text, which means that there is the potential for those characters within otherwise normal text to be handled wierdly. This can be obviated by encoding any text with `&` in it.\u000a\u000aIf you set the text into the same edit field multiple times without resetting, the IME is recycled. This means that if a `&` is inserted, and at a later point a `-` is inserted, the text between will be placed before the text of the last call. Keep, therefore, your tests atomic.\u000a\u000aThe Android emulator cannot handle certain scripts, though the text is there and can be retrieved with no problems. The problem is only display (generally, it comes out looking like whitespace).\u000a","readmeFilename":"README.md","gitHead":"08e3b67864fceb4c5d7dd456d54453802ffeb8a6","_id":"appium-android-ime@1.0.0","_shasum":"ec44546f027f475dcbda6a520385f34ae7c6cb0a","_from":".","_npmVersion":"2.0.0","_npmUser":{"name":"jonahss","email":"jonahss@gmail.com"},"maintainers":[{"name":"jonahss","email":"jonahss@gmail.com"}],"dist":{"shasum":"ec44546f027f475dcbda6a520385f34ae7c6cb0a","tarball":"http://registry.npmjs.org/appium-android-ime/-/appium-android-ime-1.0.0.tgz"}}: appium-android-ime
+46 verbose stack     at RegClient.<anonymous> (/Users/jonahss/.nvm/v0.10.32/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:261:14)
+46 verbose stack     at Request._callback (/Users/jonahss/.nvm/v0.10.32/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:198:65)
+46 verbose stack     at Request.self.callback (/Users/jonahss/.nvm/v0.10.32/lib/node_modules/npm/node_modules/request/request.js:236:22)
+46 verbose stack     at Request.emit (events.js:98:17)
+46 verbose stack     at Request.<anonymous> (/Users/jonahss/.nvm/v0.10.32/lib/node_modules/npm/node_modules/request/request.js:1142:14)
+46 verbose stack     at Request.emit (events.js:117:20)
+46 verbose stack     at IncomingMessage.<anonymous> (/Users/jonahss/.nvm/v0.10.32/lib/node_modules/npm/node_modules/request/request.js:1096:12)
+46 verbose stack     at IncomingMessage.emit (events.js:117:20)
+46 verbose stack     at _stream_readable.js:943:16
+46 verbose stack     at process._tickCallback (node.js:419:13)
+47 verbose statusCode 403
+48 verbose pkgid appium-android-ime
+49 verbose cwd /Users/jonahss/Workspace/io.appium.android.ime
+50 error Darwin 13.3.0
+51 error argv "node" "/Users/jonahss/.nvm/v0.10.32/bin/npm" "publish"
+52 error node v0.10.32
+53 error npm  v2.0.0
+54 error code E403
+55 error forbidden cannot modify pre-existing version: 1.0.0
+55 error old={"name":"appium-android-ime","version":"1.0.0","description":"Android Input Manager for testing Unicode","main":"index.js","scripts":{"prepublish":"android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug"},"repository":{"type":"git","url":"https://github.com/appium/io.appium.android.ime.git"},"keywords":["appium","test","app","ime","android"],"author":{"name":"https://github.com/imurchie"},"license":"apache-2.0","bugs":{"url":"https://github.com/appium/io.appium.android.ime/issues"},"homepage":"https://github.com/appium/io.appium.android.ime","gitHead":"4a722d3232d4ae772a173a9a9417f5ee87fd33c0","_id":"appium-android-ime@1.0.0","_shasum":"7ea8761574893ba9409f5dc475bfc8ef390796f0","_from":".","_npmVersion":"2.0.0","_npmUser":{"name":"jonahss","email":"jonahss@gmail.com"},"maintainers":[{"name":"jonahss","email":"jonahss@gmail.com"}],"dist":{"shasum":"7ea8761574893ba9409f5dc475bfc8ef390796f0","tarball":"http://registry.npmjs.org/appium-android-ime/-/appium-android-ime-1.0.0.tgz"}}
+55 error new={"name":"appium-android-ime","version":"1.0.0","description":"Android Input Manager for testing Unicode","main":"bin/UnicodeIME-debug.apk","scripts":{"prepublish":"android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug"},"repository":{"type":"git","url":"https://github.com/appium/io.appium.android.ime.git"},"keywords":["appium","test","app","ime","android"],"author":{"name":"https://github.com/imurchie"},"license":"apache-2.0","bugs":{"url":"https://github.com/appium/io.appium.android.ime/issues"},"homepage":"https://github.com/appium/io.appium.android.ime","readme":"# io.appium.android.ime\u000a\u000aThe Android emulator does not play well with non-ASCII characters. Text sent to the emulator through Selenium will be filtered through the default keyboard, which means that things get stripped down to ASCII. \"परीक्षणम्\" (\"Testing\" in Sanskrit) becomes \"prksnm\".\u000a\u000aTo get around this, this [input method](http://developer.android.com/guide/topics/text/creating-input-method.html), when set as the default, catches Unicode text encoded as [Modified UTF-7](http://tools.ietf.org/html/rfc3501) and recodes it as Unicode. Text input fields can then receive and send any characters that Unicode can encode.\u000a\u000aTo install, with the emulator running execute the following:\u000a\u000a```shell\u000aant debug\u000aadb uninstall io.appium.android.ime\u000aadb install bin/UnicodeIME-debug.apk\u000a```\u000a\u000aThis builds the application, removes any old version of it (if installed), and then installs the recently built one.\u000a\u000aOnce the input method is installed on the emulator, execute the following:\u000a\u000a```shell\u000aabd shell ime enable io.appium.android.ime/.UnicodeIME\u000aadb shell ime set io.appium.android.ime/.UnicodeIME\u000a```\u000a\u000a(Alternatively, on the device, access `Settings`, then `Language & Input`. Make sure `Appium Android Input Manager for Unicode` is selected, and finally go to `Default` and set it to `Appium Android Input Manager for Unicode`.)\u000a\u000aYour device is now set to receive encoded text from [Appium](http://appium.io/)!\u000a\u000aOn the Appium Bootstrap side, there needs to be an encoding of the text into Modified UTF-7, sending encoded text to the device through `setText`:\u000a\u000a```java\u000aimport java.nio.charset.Charset;\u000a\u000a\u000apublic class UnicodeEncoder {\u000a    private static final Charset M_UTF7 = Charset.forName(\"x-IMAP-mailbox-name\");\u000a    private static final Charset ASCII  = Charset.forName(\"US-ASCII\");\u000a\u000a\u000a    public static String encode(String text) {\u000a        byte[] encoded = text.getBytes(M_UTF7);\u000a        return new String(encoded, ASCII);\u000a    }\u000a}\u000a```\u000a\u000a## Caveats\u000a\u000aThe encoding system uses the characters `&` and `-` to demarcate encoded text, which means that there is the potential for those characters within otherwise normal text to be handled wierdly. This can be obviated by encoding any text with `&` in it.\u000a\u000aIf you set the text into the same edit field multiple times without resetting, the IME is recycled. This means that if a `&` is inserted, and at a later point a `-` is inserted, the text between will be placed before the text of the last call. Keep, therefore, your tests atomic.\u000a\u000aThe Android emulator cannot handle certain scripts, though the text is there and can be retrieved with no problems. The problem is only display (generally, it comes out looking like whitespace).\u000a","readmeFilename":"README.md","gitHead":"08e3b67864fceb4c5d7dd456d54453802ffeb8a6","_id":"appium-android-ime@1.0.0","_shasum":"ec44546f027f475dcbda6a520385f34ae7c6cb0a","_from":".","_npmVersion":"2.0.0","_npmUser":{"name":"jonahss","email":"jonahss@gmail.com"},"maintainers":[{"name":"jonahss","email":"jonahss@gmail.com"}],"dist":{"shasum":"ec44546f027f475dcbda6a520385f34ae7c6cb0a","tarball":"http://registry.npmjs.org/appium-android-ime/-/appium-android-ime-1.0.0.tgz"}}: appium-android-ime
+56 error If you need help, you may report this error at:
+56 error     <http://github.com/npm/npm/issues>
+57 verbose exit [ 1, true ]
