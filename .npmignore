@@ -3,5 +3,4 @@ bin/*
 gen
 out
 .settings/
-*.apk
 .idea/*
