@@ -24,12 +24,15 @@ import java.nio.charset.CharacterCodingException;
 
 import android.inputmethodservice.InputMethodService;
 import android.text.method.MetaKeyKeyListener;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 
 public class UnicodeIME extends InputMethodService {
+    private static final String TAG = "AppiumUnicodeIME";
+
     // encodings
     private static final Charset M_UTF7 = Charset.forName("x-IMAP-mailbox-name");
     private static final Charset ASCII  = Charset.forName("US-ASCII");
@@ -48,6 +51,7 @@ public class UnicodeIME extends InputMethodService {
 
     @Override
     public void onStartInput(EditorInfo attribute, boolean restarting) {
+        Log.i(TAG, "onStartInput");
         super.onStartInput(attribute, restarting);
 
         if (!restarting) {
@@ -59,6 +63,7 @@ public class UnicodeIME extends InputMethodService {
 
     @Override
     public void onFinishInput() {
+        Log.i(TAG, "onFinishInput");
         super.onFinishInput();
         unicodeString = null;
     }
@@ -75,6 +80,7 @@ public class UnicodeIME extends InputMethodService {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.i(TAG, "onKeyDown (keyCode='" + keyCode + "', event.keyCode='" + event.getKeyCode() + "', metaState='" + event.getMetaState() + "')");
         int c = getUnicodeChar(keyCode, event);
 
         if (c == 0) {
@@ -103,8 +109,9 @@ public class UnicodeIME extends InputMethodService {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.i(TAG, "onKeyUp (keyCode='" + keyCode + "', event.keyCode='" + event.getKeyCode() + "', metaState='" + event.getMetaState() + "')");
         metaState = MetaKeyKeyListener.handleKeyUp(metaState, keyCode, event);
-        return super.onKeyUp(keyCode, event);
+        return true;
     }
 
     private void shift() {
@@ -123,7 +130,7 @@ public class UnicodeIME extends InputMethodService {
 
     private int getUnicodeChar(int keyCode, KeyEvent event) {
         metaState = MetaKeyKeyListener.handleKeyDown(metaState, keyCode, event);
-        int c = event.getUnicodeChar(MetaKeyKeyListener.getMetaState(metaState));
+        int c = event.getUnicodeChar(event.getMetaState());
         metaState = MetaKeyKeyListener.adjustMetaAfterKeypress(metaState);
         return c;
     }
