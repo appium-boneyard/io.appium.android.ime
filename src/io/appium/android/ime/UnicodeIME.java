@@ -111,7 +111,7 @@ public class UnicodeIME extends InputMethodService {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         Log.i(TAG, "onKeyUp (keyCode='" + keyCode + "', event.keyCode='" + event.getKeyCode() + "', metaState='" + event.getMetaState() + "')");
         metaState = MetaKeyKeyListener.handleKeyUp(metaState, keyCode, event);
-        return true;
+        return super.onKeyUp(keyCode, event);
     }
 
     private void shift() {
