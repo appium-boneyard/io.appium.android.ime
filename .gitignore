@@ -5,3 +5,4 @@ out
 *.apk
 .idea/*
 local.properties
+npm-debug.log
