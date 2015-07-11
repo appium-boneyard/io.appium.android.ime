@@ -4,3 +4,4 @@ gen
 out
 .settings/
 .idea/*
+npm-debug.log
