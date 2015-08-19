@@ -42,7 +42,8 @@ public class UnicodeIME extends InputMethodService {
     // markers of UTF-7 content
     private static final char M_UTF7_SHIFT   = '&';
     private static final char M_UTF7_UNSHIFT = '-';
-
+    
+    private static String strInputString = "";
     // local state
     private boolean isShifted;
     private long metaState;
@@ -53,7 +54,7 @@ public class UnicodeIME extends InputMethodService {
     public void onStartInput(EditorInfo attribute, boolean restarting) {
         Log.i(TAG, "onStartInput");
         super.onStartInput(attribute, restarting);
-
+        strInputString = "";
         if (!restarting) {
             metaState = 0;
             isShifted = false;
@@ -63,7 +64,7 @@ public class UnicodeIME extends InputMethodService {
 
     @Override
     public void onFinishInput() {
-        Log.i(TAG, "onFinishInput");
+        Log.i(TAG, "onFinishInput: string" + strInputString );
         super.onFinishInput();
         unicodeString = null;
     }
@@ -80,14 +81,12 @@ public class UnicodeIME extends InputMethodService {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.i(TAG, "onKeyDown (keyCode='" + keyCode + "', event.keyCode='" + event.getKeyCode() + "', metaState='" + event.getMetaState() + "')");
         int c = getUnicodeChar(keyCode, event);
-
         if (c == 0) {
             return super.onKeyDown(keyCode, event);
         }
-
-        if (!isShifted) {
+    
+    	if (!isShifted) {
             if (c == M_UTF7_SHIFT) {
                 shift();
                 return true;
@@ -109,7 +108,6 @@ public class UnicodeIME extends InputMethodService {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        Log.i(TAG, "onKeyUp (keyCode='" + keyCode + "', event.keyCode='" + event.getKeyCode() + "', metaState='" + event.getMetaState() + "')");
         metaState = MetaKeyKeyListener.handleKeyUp(metaState, keyCode, event);
         return super.onKeyUp(keyCode, event);
     }
@@ -137,6 +135,7 @@ public class UnicodeIME extends InputMethodService {
 
     private void commitChar(int c) {
         getCurrentInputConnection().commitText(String.valueOf((char) c), 1);
+        strInputString = strInputString + String.valueOf((char) c);
     }
 
     private void appendChar(int c) {
@@ -156,6 +155,8 @@ public class UnicodeIME extends InputMethodService {
     }
 
     private boolean isAsciiPrintable(int c) {
+    	if (c == 10)
+    		return true;
         return c >= 0x20 && c <= 0x7E;
     }
 }
