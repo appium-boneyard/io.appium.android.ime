@@ -6,3 +6,4 @@ out
 .idea/*
 local.properties
 npm-debug.log
+package-lock.json
