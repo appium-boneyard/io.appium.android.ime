@@ -4,12 +4,16 @@
   "description": "Android Input Manager for testing Unicode",
   "main": "index.js",
   "scripts": {
-    "prepublish": "android update project --subprojects --target android-19 --path . --name UnicodeIME && ant clean debug"
+    "prepare": "ant clean debug"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/appium/io.appium.android.ime.git"
   },
+  "files": [
+    "index.js",
+    "bin/UnicodeIME-debug.apk"
+  ],
   "keywords": [
     "appium",
     "test",

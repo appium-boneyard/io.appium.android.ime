@@ -1,7 +1,0 @@
-bin/*
-!bin/UnicodeIME-debug.apk
-gen
-out
-.settings/
-.idea/*
-npm-debug.log
